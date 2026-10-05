@@ -1,0 +1,35 @@
+# Python environments and bytecode
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Test, type-check, lint and coverage artifacts
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Packaging artifacts
+build/
+dist/
+*.egg-info/
+
+# Local secrets; sanitized examples may be tracked
+.env
+.env.*
+!.env.example
+
+# Reserved local media and generated results (not test fixtures)
+/data/
+/output/
+/outputs/
+
+# Editor and operating-system temporary files
+*.swp
+*.swo
+*~
+.DS_Store
