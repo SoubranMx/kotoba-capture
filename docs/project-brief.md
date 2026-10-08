@@ -2,41 +2,34 @@
 
 ## Goal
 
-Help a Japanese learner study from video by listening and reading Japanese subtitles, transcribing them into Obsidian, and collecting vocabulary they do not know. The desired output is reviewable, not a claim of perfect transcription or automatic vocabulary diagnosis.
+Help a Japanese learner study from video by reading subtitles and collecting reviewable text for later note-taking. The system should support human review, not claim perfect transcription or diagnose which vocabulary a learner knows.
 
-## What the subtitles look like
+## Subtitle and video characteristics
 
-The main Japanese text is white, with smaller furigana, on translucent blue rectangles. Rectangles usually sit in the upper part of the frame, but their size and position vary. A frame may contain several adjacent rectangles or multiple quoted interventions at once. The camera also moves past Japanese signage, which can resemble subtitle text.
+Subtitle backgrounds vary: blue, gray, or absent. Text position, size, and line count are relatively stable in some stretches but can vary. Frames may contain several adjacent lines or simultaneous interventions, and the camera may pass Japanese signage that resembles subtitles. These are evaluation risks, not cues the current prototype claims to solve.
 
-Two clipboard images were supplied as temporary evidence. They are not durable project fixtures and must not be copied into the repository.
+## Intended product direction
 
-## Proposed first-prototype workflow
+The longer-term local application is expected to be a monorepo with a TanStack Start web interface and a FastAPI service. That product UI/API is future work, not part of the current prototype. The present implementation is a development CLI and dependency-free Python core for sampling, conservative consecutive grouping, local review exports, and comparison with a manual reference.
 
-Python, FFmpeg, and OpenCV are proposed building blocks; no extractor exists yet, and the OCR engine is undecided.
+## Current prototype behavior
 
-1. Prefer an existing subtitle track when available. Otherwise sample video frames with timestamps. A 0.5-second initial sampling interval is only a trial: it can miss shorter subtitles.
-2. Detect candidate blue regions using multiple visual cues, not color alone. Support variable and multiple regions, ordered for reading.
-3. Crop at original resolution. Compare text-shaped features across frames rather than relying on the moving background.
-4. OCR the main text and furigana separately when possible, preserving relative positions and confidence if the engine supports them.
-5. Deduplicate only consecutive equivalent segments. A phrase repeated later should remain. Preserve a representative crop and approximate on-screen interval.
-6. Mark uncertain text for review; never invent missing characters. Export reviewable UTF-8 Markdown and optionally structured segment data. Apply language enrichment only after user review.
+1. FFmpeg samples requested timestamps; the current evaluation used a full-frame baseline at 0.5-second intervals over the first 214 seconds.
+2. Tesseract OCR output is retained as sampled observations with crop links and engine-provided confidence where available.
+3. Only consecutive equivalent nonblank text is grouped. Equivalence is Unicode NFKC plus whitespace normalization; original text is retained. Later repetitions remain separate.
+4. JSON and UTF-8 Markdown exports mark all OCR text for review. Approximate sample intervals are not audio alignment.
+5. A local evaluation compares a deterministic modal OCR string within each timestamped reference window to the manually transcribed text using character-level edit distance.
+
+The pipeline does not detect subtitle regions, assume a particular background color, separate furigana, identify signage, infer missing characters, translate, transcribe audio, or write to Obsidian. The full-frame run is an exploratory baseline, not a reliability guarantee.
 
 ## Interpretation limits
 
-Displayed subtitle times are not audio alignment. A group interval does not align its individual interventions to the audio. The system cannot guarantee OCR reliability or automatically know which words the learner does not know. Sampling may miss brief subtitles; signage may contaminate results; furigana can be mixed with main text.
+Sampling can miss brief subtitle changes. A reference window may cover several changing subtitle screens, while the evaluation chooses one modal sampled snapshot; its CER can therefore overstate error or miss text that appeared briefly. Reference-assisted modal-window CER is not subtitle-detection recall, and unassigned samples are not classified as signage. OCR confidence is not calibrated correctness probability. No audio alignment is provided.
 
-## First evaluation milestone
+## Prototype evaluation
 
-Use a short, representative, user-supplied sample and a manually checked reference. Evaluate:
+The approved sample run, aggregate-only results, methodology, limitations, and next bounded recommendation are in [prototype-evaluation.md](prototype-evaluation.md). The observed results are poor and do not meet the provisional 10% modal-window CER diagnostic. The proposed 95% phrase-coverage goal was not measured as detection recall and is not an approved guarantee.
 
-- Missing phrases, including brief appearances.
-- Consecutive duplicates and preservation of later repeated phrases.
-- Signage contamination and region/reading order.
-- Furigana mixed with main text and confidence/uncertainty handling.
-- Approximate display timing and usefulness of the reviewable export.
+## Deferred work
 
-Sampling interval, thresholds, output details, acceptable accuracy, and the OCR engine remain pending decisions. Agree on them against the sample; do not imply a reliability guarantee.
-
-## Explicitly outside the first prototype
-
-Translation, grammar instruction, external APIs, a UI, and audio transcription require separate approval. Any external transmission of video, images, or text requires explicit user approval.
+Any web UI/API, subtitle-region detection, furigana separation, visual classification of signage, translation, audio transcription, Obsidian writes, or broader video evaluation requires a separately approved task. Manual checks of signage, furigana, reading order, timing, and export usefulness remain pending.

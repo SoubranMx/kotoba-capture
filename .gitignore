@@ -23,6 +23,8 @@ dist/
 .env.*
 !.env.example
 
+# Local-only data and generated results
+.local/
 # Reserved local media and generated results (not test fixtures)
 /data/
 /output/
