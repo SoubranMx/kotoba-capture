@@ -54,3 +54,7 @@ uv run --directory apps/server --offline --no-python-downloads --python /usr/bin
 The evaluator reads only the Japanese Transcription and Timestamp columns; untimed vocabulary rows are counted and skipped. Its sample protocol and aggregate-only results are in [the prototype evaluation guide](../../docs/prototype-evaluation.md).
 
 The evaluator applies Unicode NFKC and removes whitespace while preserving punctuation. It chooses the most frequent normalized OCR string, including blanks, inside each half-open timestamp window; the earliest sample wins ties. Character error is summed Levenshtein edits divided by reference characters and may exceed 100%. The 10% CER threshold is provisional. Detailed per-window reports contain private reference/OCR text and must remain under ignored `.local/`; the CLI prints aggregate metrics only. This reference-assisted modal-snapshot diagnostic is not detection recall, and confidence is not used as a correctness probability.
+
+## Opt-in experimental selector
+
+`kotoba_capture.selector` preserves the frozen v17 geometry/style selector and 116 public synthetic tests. It consumes native OCR arrays with a manual profile; it does not run OCR or process video and is not wired into the default CLI. See [the experimental selector guide](../../docs/experimental-selector.md) for its runnable synthetic example, dependency-free checks and known limitations. The optional visual adapter and full-video workflow remain separate follow-up work.
