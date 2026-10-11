@@ -15,7 +15,7 @@ The 116 tests use English synthetic text, geometry and evidence. No model, image
 
 ## Synthetic API example
 
-Run this example with `PYTHONPATH=. /usr/bin/python3 -B -S` from `apps/server`. Its fabricated style evidence demonstrates the contract only, not real image measurement. The optional image adapter and experimental complete-video runner are separate follow-up work, not available through this module.
+Run this example with `PYTHONPATH=. /usr/bin/python3 -B -S` from `apps/server`. Its fabricated style evidence demonstrates the contract only, not real image measurement. The optional image adapter is available through a separate opt-in module; the experimental complete-video runner remains follow-up work. This core example does not import either.
 
 ```python
 import hashlib
@@ -72,4 +72,39 @@ Frozen within-source evaluation covered 18 isolated positive images from three k
 
 These small, correlated, assistant-adjudicated samples are not human-confirmed ground truth, unseen-positive generalization, continuous subtitle coverage or complete-video evidence. Do not interpret character accuracy as detection recall. Sampling times are approximate display times, not audio alignment.
 
-This commit preserves experimental code; it does not certify product readiness. Next: separately preserve the optional visual adapter and build a reproducible local full-video pilot without retuning the frozen selector during evaluation. Keep all media, models, snapshots, OCR text, references and detailed reports under ignored `.local/`; only code, synthetic tests and aggregate metrics belong in Git.
+This commit preserves experimental code; it does not certify product readiness. Next: build a reproducible local full-video pilot using the separately preserved optional visual adapter without retuning the frozen selector during evaluation. Keep all media, models, snapshots, OCR text, references and detailed reports under ignored `.local/`; only code, synthetic tests and aggregate metrics belong in Git.
+
+## Optional visual adapter
+
+Import `kotoba_capture.style_evidence` explicitly with an interpreter that already has NumPy and OpenCV. This preserved module is not imported by the selector, package initializer or default Tesseract CLI. No OCR engine, model, installation or source-specific profile is included.
+
+- `measure(rgb, polygon)` measures a crop-local four-point polygon.
+- `from_rgb(rgb, native, geometry, image_sha)` accepts RGB `uint8` arrays shaped `(crop_height, crop_width, 3)` and returns indexed evidence for all recognition polygons.
+- `from_path(path, native, geometry)` decodes an encoded image with OpenCV, converts BGR to RGB and hashes the exact file bytes.
+
+For in-memory callers, the supplied identity must match the selector's expected image identity; `from_rgb` cannot verify that the caller's hash actually describes those pixels. The complete native result and geometry are separately bound using sorted compact JSON. Do not filter native arrays or fabricate statuses from reference text. Measurements describe physical style, not semantic subtitle intent or calibrated probability.
+
+Run the nine synthetic pixel tests from `apps/server`, using an interpreter with the existing optional dependencies:
+
+```sh
+PYTHONPATH=. python -B -m unittest discover -s tests/selector_style -t tests -v
+```
+
+Dependency-free full-suite execution skips these nine tests only when NumPy or OpenCV cannot be found. If dependencies are present but broken, or the adapter API fails, the tests fail rather than skip. The 116-test selector guard remains separately dependency-free. Synthetic pixel tests create arrays in memory; no image asset or OCR run is tracked.
+
+The following example runs only with those optional dependencies:
+
+```python
+import hashlib
+import numpy as np
+from kotoba_capture.style_evidence import from_rgb
+
+rgb = np.zeros((80, 200, 3), dtype=np.uint8)
+poly = [[10, 10], [180, 10], [180, 60], [10, 60]]
+native = dict(rec_texts=['Toy caption'], rec_scores=[0.9],
+    rec_boxes=[[10, 10, 180, 60]], rec_polys=[poly], dt_polys=[poly])
+geometry = dict(sourceWidth=200, sourceHeight=80, crop=[0, 0, 200, 80])
+identity = hashlib.sha256(b'Synthetic encoded-image identity').hexdigest()
+evidence = from_rgb(rgb, native, geometry, identity)
+assert evidence['entries'][0]['status'] == 'mismatch'
+```
