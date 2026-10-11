@@ -11,13 +11,14 @@ The user explicitly authorizes local work-unit commits, assistant visual adjudic
 - Branch: `feat/tracked-v17-full-video-pilot`.
 - Initial review boundary: `4a5bce5f6c980e44088867df18b6596cfdfba3e6`.
 - Delivery strategy: `exception-ok`; selector and synthetic tests stay together despite exceeding about 400 authored lines. Adapter and video runtime remain separate units. No PR is planned.
-- Forecast: T1 about 1,100 authored lines; T2 about 83 existing adapter lines plus tests/docs; T3 not yet estimable until bounded exploration. Actual committed line count: zero pending parent commit.
+- Forecast: T1 about 1,100 authored lines; T2 about 83 existing adapter lines plus tests/docs; T3 not yet estimable until bounded exploration. Actual T1 committed line count: 1,204 authored additions.
+- Current reviewed boundary: `6766776618ea5e3ad394d3d478e65bb141001dc1`.
 - RDD enabled by user request; native candidate consent and review remain pending. Global/clone mode enables future review but does not grant blanket session consent. Candidate consent applies only to the exact frozen candidate; no session-wide approval is supported. Checkboxes are not review approval.
 - Recovery mirror: Engram topic `odd/tracked-v17-full-video-pilot/tasks`; full document plus this repository-relative locator.
 
 ## Tasks
 
-- [ ] **T1 — Preserve the dependency-free selector.** Delegated direct: reading prepares a write and multiple nontrivial files. Promote frozen bytes, relocate 116 synthetic tests, add a standard-library-only import guard and usage docs. Acceptance: exact selector SHA-256 preserved, original CLI untouched, baseline and selector checks pass, no private artifacts promoted. Commit and native RDD evidence pending.
+- [x] **T1 — Preserve the dependency-free selector.** Delegated direct: reading prepares a write and multiple nontrivial files. Promote frozen bytes, relocate 116 synthetic tests, add a standard-library-only import guard and usage docs. Acceptance: exact selector SHA-256 preserved, original CLI untouched, baseline and selector checks pass, no private artifacts promoted. Commit `6766776618ea5e3ad394d3d478e65bb141001dc1`; user granted native review `review-a8b1db0a7877da41`, approved and exact acknowledgement burned authority. Parent repeated the 116-test stdlib guard successfully.
 - [ ] **T2 — Preserve the optional style adapter.** Delegated direct; separate code/tests/docs unit. No dependency installation or default engine change. Determine exact surface and checks before writing.
 - [ ] **T3 — Add an experimental complete-video runner.** Delegated direct; reproducible parameters, recoverable progress, local review outputs and explicit profiles. Determine surface and runnable test-first checks before writing; keep v17 algorithm frozen.
 - [ ] **T4 — Evaluate the first complete video.** Delegated execution and visual adjudication; retain snapshots and detailed error ledger privately. Record omissions, false positives, transcription errors, ambiguities and reviewed coverage separately. Assistant references are provisional. Define favorable criteria before evaluating, not after seeing outputs.
@@ -42,7 +43,7 @@ First full-video OCR forecast: about 10–15.4 hours for 2,608 requested samples
 
 ## Progress and next step
 
-T1 implementation and functional checks PASS; commit/RDD remain pending, so T1 is not checked off. Frozen selector SHA-256: `b679cf553ba75261b9c3af92ee6891be9e5d4b66bcefb3d0cc4dc7f48f694eb9` (522 lines, byte-identical). Twelve relocated test modules preserve all function/class ASTs and 116 methods; package imports replace the experimental dynamic loader. New import guard observed RED before promotion (missing tracked selector, exit 1), then GREEN with the tracked selector and all 116 tests; no algorithm change or artificial algorithm RED.
+T1 implementation, functional checks, commit and native RDD completed; T1 is checked off. Frozen selector SHA-256: `b679cf553ba75261b9c3af92ee6891be9e5d4b66bcefb3d0cc4dc7f48f694eb9` (522 lines, byte-identical). Twelve relocated test modules preserve all function/class ASTs and 116 methods; package imports replace the experimental dynamic loader. New import guard observed RED before promotion (missing tracked selector, exit 1), then GREEN with the tracked selector and all 116 tests; no algorithm change or artificial algorithm RED.
 
 Observed checks from `apps/server`:
 
@@ -55,4 +56,25 @@ Observed checks from `apps/server`:
 - Public artifact scan: 18 allowed files, syntax and private-locator/transcript checks PASS; English synthetic fixtures manually inspected.
 - `git diff --check`: PASS. No normalizer required; no private assets or models copied.
 
-T1 authored forecast realized: 1,191 new/added lines before this progress update (including feature document); final parent commit count will supersede this intermediate count. Parent owns Git staging/commits and native review. T2–T5 are pending under the updated exactly-one-video scope. Next: parent spot check, work-unit commit and native RDD candidate consent. No video runtime was launched.
+T1 authored forecast realized: 1,191 new/added lines before this progress update (including feature document); final parent commit count will supersede this intermediate count. Parent owns Git staging/commits and native review. T2 implementation and functional checks PASS; commit/risk assessment/applicable native review pending; T3–T5 remain pending under the updated exactly-one-video scope. Next: verify the optional adapter, then parent commit/risk assessment and applicable native candidate consent. No video runtime was launched.
+
+## Follow-up and runtime configuration
+
+Native T1 advisory `R3-numeric-overflow`: very large integers such as `10**400` can raise during `math.isfinite` checks. This was nonblocking; approved receipt stands. Record a future bounded hardening task if authorized, not a change to this frozen candidate.
+
+T3 must use explicit environment-variable configuration documented in `.env.example`, including host-specific model and policy locations, rather than hardcoded absolute paths. No environment configuration is needed by the pure in-memory T2 adapter. Exactly one full-video pilot uses the existing 0.5-second sampling plan (2,608 requested samples); stop afterward and report actual extraction/OCR/review time and interruption downtime separately. Assistant references remain provisional.
+
+## T2 verification evidence
+
+Optional adapter is byte-identical to the frozen 41-line module (SHA-256 `5d50fdaf3966e811e08dc5dde87d0158f7fc460fac111674083dffa8128acc83`). Two synthetic test modules preserve all function ASTs and nine methods; import availability alone controls skips, never a caught broken API. Meaningful relocation RED observed before tracked adapter existed (two discovery errors, exit 1), then GREEN after promotion; no algorithm change.
+
+From `apps/server`:
+
+- `PYTHONPATH=. /usr/bin/python3 -B -S -m unittest discover -s tests -v`: 151 discovered, 142 PASS and nine optional dependency skips.
+- `/usr/bin/python3 -B -S tests/check_selector_stdlib.py`: 116 PASS with optional imports blocked.
+- Existing optional-dependency interpreter, `PYTHONPATH=. python -B -m unittest discover -s tests -v`: 151 PASS, zero skips.
+- Same interpreter, `PYTHONPATH=. python -B -m unittest discover -s tests/selector_style -t tests -v`: nine PASS, zero skips.
+- Both documented synthetic API examples: PASS.
+- Adapter byte equality, original portable core/adapter package checksums, test function AST semantics, public privacy/syntax scan and `git diff --check`: PASS.
+
+No dependency installation, model/media execution, source profile promotion or optional package initializer import occurred. Parent owns T2 commit and applicable RDD. Rollback removes the opt-in adapter, isolated pixel tests and its docs without changing core/default CLI behavior.
