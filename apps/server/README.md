@@ -57,4 +57,8 @@ The evaluator applies Unicode NFKC and removes whitespace while preserving punct
 
 ## Opt-in experimental selector
 
-`kotoba_capture.selector` preserves the frozen v17 geometry/style selector and 116 public synthetic tests. It consumes native OCR arrays with a manual profile; it does not run OCR or process video and is not wired into the default CLI. See [the experimental selector guide](../../docs/experimental-selector.md) for its runnable synthetic example, dependency-free checks and known limitations. The optional visual adapter and full-video workflow remain separate follow-up work.
+`kotoba_capture.selector` preserves the frozen v17 geometry/style selector and 116 public synthetic tests. It consumes native OCR arrays with a manual profile; it does not run OCR or process video and is not wired into the default CLI. See [the experimental selector guide](../../docs/experimental-selector.md) for its runnable synthetic example, dependency-free checks and known limitations. The optional visual adapter is available as `kotoba_capture.style_evidence`; it requires existing NumPy/OpenCV dependencies. The opt-in full-video workflow is separate from the original Tesseract CLI.
+
+## Opt-in frozen whole-video pilot
+
+`python -m kotoba_capture.video_pilot` loads the ignored project `.env` (or `--env-file`) with process-environment precedence. It samples one complete local video, applies the versioned v17 selector and optional adapter, and writes resumable private audits and review exports. It requires existing local PaddleOCR 3.7.0 CPU dependencies and model assets; it never installs or downloads them. The original CLI does not auto-load `.env` and remains unchanged. See [the pilot guide](../../docs/full-video-pilot.md) for configuration, freeze/resume semantics and interpretation limits.

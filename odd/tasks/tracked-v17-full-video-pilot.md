@@ -13,13 +13,13 @@ The user explicitly authorizes local work-unit commits, assistant visual adjudic
 - Delivery strategy: `exception-ok`; selector and synthetic tests stay together despite exceeding about 400 authored lines. Adapter and video runtime remain separate units. No PR is planned.
 - Forecast: T1 about 1,100 authored lines; T2 about 83 existing adapter lines plus tests/docs; T3 not yet estimable until bounded exploration. Actual T1 committed line count: 1,204 authored additions.
 - Current reviewed boundary: `6766776618ea5e3ad394d3d478e65bb141001dc1`.
-- RDD enabled by user request; native candidate consent and review remain pending. Global/clone mode enables future review but does not grant blanket session consent. Candidate consent applies only to the exact frozen candidate; no session-wide approval is supported. Checkboxes are not review approval.
+- RDD enabled by user request; T1 consent/review completed; T2 under-budget slice and T3 applicable candidate consent/review remain pending. Global/clone mode enables future review but does not grant blanket session consent. Candidate consent applies only to the exact frozen candidate; no session-wide approval is supported. Checkboxes are not review approval.
 - Recovery mirror: Engram topic `odd/tracked-v17-full-video-pilot/tasks`; full document plus this repository-relative locator.
 
 ## Tasks
 
 - [x] **T1 — Preserve the dependency-free selector.** Delegated direct: reading prepares a write and multiple nontrivial files. Promote frozen bytes, relocate 116 synthetic tests, add a standard-library-only import guard and usage docs. Acceptance: exact selector SHA-256 preserved, original CLI untouched, baseline and selector checks pass, no private artifacts promoted. Commit `6766776618ea5e3ad394d3d478e65bb141001dc1`; user granted native review `review-a8b1db0a7877da41`, approved and exact acknowledgement burned authority. Parent repeated the 116-test stdlib guard successfully.
-- [ ] **T2 — Preserve the optional style adapter.** Delegated direct; separate code/tests/docs unit. No dependency installation or default engine change. Determine exact surface and checks before writing.
+- [x] **T2 — Preserve the optional style adapter.** Delegated direct; separate code/tests/docs unit. Commit `d7aa88807bc2241a7577e5711eed4b3ff89c78d6`; native assessment medium, 163 authored lines, `under_budget`. T2 remains in the pending slice after reviewed boundary `6766776618ea5e3ad394d3d478e65bb141001dc1`. Functional checks passed; no dependencies installed or default engine change.
 - [ ] **T3 — Add an experimental complete-video runner.** Delegated direct; reproducible parameters, recoverable progress, local review outputs and explicit profiles. Determine surface and runnable test-first checks before writing; keep v17 algorithm frozen.
 - [ ] **T4 — Evaluate the first complete video.** Delegated execution and visual adjudication; retain snapshots and detailed error ledger privately. Record omissions, false positives, transcription errors, ambiguities and reviewed coverage separately. Assistant references are provisional. Define favorable criteria before evaluating, not after seeing outputs.
 - [ ] **T5 — Hand off the single-video error and timing summary.** No additional evaluation. Report aggregate errors, actual elapsed wall time, extraction/OCR/review durations, ambiguities, reviewed coverage and any interruption downtime separately. Assistant visual references remain provisional. Stop after the one complete-video pilot finishes; leave refinement and other features for the user to decide.
@@ -56,7 +56,7 @@ Observed checks from `apps/server`:
 - Public artifact scan: 18 allowed files, syntax and private-locator/transcript checks PASS; English synthetic fixtures manually inspected.
 - `git diff --check`: PASS. No normalizer required; no private assets or models copied.
 
-T1 authored forecast realized: 1,191 new/added lines before this progress update (including feature document); final parent commit count will supersede this intermediate count. Parent owns Git staging/commits and native review. T2 implementation and functional checks PASS; commit/risk assessment/applicable native review pending; T3–T5 remain pending under the updated exactly-one-video scope. Next: verify the optional adapter, then parent commit/risk assessment and applicable native candidate consent. No video runtime was launched.
+T1 authored forecast realized: 1,191 new/added lines before this progress update (including feature document); final parent commit count will supersede this intermediate count. Parent owns Git staging/commits and native review. T2 implementation, functional checks and commit PASS; native assessment is medium, 163 authored lines and `under_budget`, pending in the slice after the T1 reviewed boundary. T3 implementation/mock verification PASS, but parent spot check, commit and applicable native review remain pending. T4–T5 have not started. No real video runtime was launched.
 
 ## Follow-up and runtime configuration
 
@@ -77,4 +77,33 @@ From `apps/server`:
 - Both documented synthetic API examples: PASS.
 - Adapter byte equality, original portable core/adapter package checksums, test function AST semantics, public privacy/syntax scan and `git diff --check`: PASS.
 
-No dependency installation, model/media execution, source profile promotion or optional package initializer import occurred. Parent owns T2 commit and applicable RDD. Rollback removes the opt-in adapter, isolated pixel tests and its docs without changing core/default CLI behavior.
+No dependency installation, model/media execution, source profile promotion or optional package initializer import occurred. Parent committed T2 and recorded the medium under-budget assessment; applicable slice review remains pending. Rollback removes the opt-in adapter, isolated pixel tests and its docs without changing core/default CLI behavior.
+
+## T3 implementation scope and checks
+
+Delegated direct: configuration and runner introduce multiple nontrivial files and require prepared reading. Allowed surfaces: `.env.example`, `apps/server/kotoba_capture/{pilot_config,video_pilot}.py`, `apps/server/tests/test_{pilot_config,video_pilot}.py`, `apps/server/README.md`, `docs/full-video-pilot.md`, and this task document. Forecast about 900–1,300 authored lines; parent must resolve size before committing, with no artificial code/test split. No real OCR, model import, extraction or complete-video run is permitted in this code-only unit.
+
+The new opt-in CLI loads a strict non-executing environment file with process-environment precedence, confines outputs/models/policies to ignored experiment storage, freezes inputs before predictions, records atomic per-case outputs, and resumes missing samples only after exact identity validation. One engine per execution attempt. Mock tests exercise complete-video sampling, interruptions, immutable replay, blank/ambiguous results and review exports. T3 remains unchecked pending parent commit, spot check and native review. T4 has not started.
+
+Configuration relocation RED: new `test_pilot_config.py` discovery failed with missing `kotoba_capture.pilot_config` before implementation (exit 1).
+
+## T3 verification evidence (code only)
+
+New config/video modules observed meaningful RED before implementation (each discovery failed with its missing module, exit 1). GREEN and subsequent refactors passed all 31 new synthetic tests. The mock entrypoint test invokes fresh Python subprocesses through `main`: a three-timestamp complete-video plan is interrupted after one durable record (exit 1), then explicit resume completes three records (exit 0), with four entered predictions over two engine initializations and no re-prediction of completed records. No real model/media/import execution occurred.
+
+From `apps/server`:
+
+- `PYTHONPATH=. /usr/bin/python3 -B -S -m unittest discover -s tests -p 'test_*pilot*.py' -v`: 31 PASS.
+- `PYTHONPATH=. /usr/bin/python3 -B -S -m unittest discover -s tests -v`: 182 discovered, 173 PASS, nine explicit optional-dependency skips.
+- `/usr/bin/python3 -B -S tests/check_selector_stdlib.py`: 116 PASS with optional imports blocked.
+- Existing optional interpreter, `PYTHONPATH=. ../../.local/ocr-probes/paddleocr-cpu/venv/bin/python -B -m unittest discover -s tests -v`: 182 PASS, zero skips.
+- `PYTHONPATH=. /usr/bin/python3 -B -S -m kotoba_capture.video_pilot --help`: PASS without optional dependencies.
+- New Python AST parsing, public machine-locator/privacy checks, preserved `.env.example` existing definitions, exact selector/adapter hashes and `git diff --check`: PASS.
+
+Implemented configuration: portable media/experiment settings, strict `.env` parsing with environment precedence, private local model/policy settings, explicit manual profile, threads and cadence. No new dependencies, model assets or snapshots were added. Runtime constructor uses the existing PaddleOCR 3.7.0 public aliases and verifies their installed mapping without patching packages.
+
+Durability evidence covers source/model/profile/runtime/code/config mutation rejection, consumed completed runs, corrupt/missing/extra/reordered records, image/style/selection binding mismatch, symlink escape, concurrent writer refusal, blank-separated repetition, multiline text, abstention retention, initialization failure and durable-record-before-ledger reconciliation. Actual phase timings are retained per sample and attempt. Abrupt power-loss intervals cannot be split honestly into processing/downtime and are explicitly unobserved; active time is then a lower bound.
+
+T3 forecast realized before this final tracking update: about 1,230 authored lines including configuration, runner, tests and docs. The cohesive runtime/durability/configuration boundary exceeds the planning heuristic; parent must resolve delivery sizing before commit rather than dropping tests or splitting executable code from proof. Rollback removes the new opt-in modules/tests/guide and added env definitions/README section, preserving existing Tesseract CLI and promoted v17 selector/adapter.
+
+Next: parent structural spot check, independent verification when native tier requires it, T3 commit and applicable native RDD consent/review. Exactly-one H01 pilot remains planned for the existing 1,303.941-second source at 0.5-second cadence (2,608 samples); no run or visual review has started. Do not launch T4 before that gate or infer favorable metrics from these mock tests.
