@@ -123,3 +123,31 @@ EOF advisory checked before launch using local `ffprobe` packet metadata only. T
 Before viewing outputs, the conservative sampled-pilot favorable criteria are fixed privately: every planned record durable and visually reviewed; positive aggregate CER below 10%; zero confirmed complete sample omissions; zero confirmed sample false positives; no unresolved presence/text ambiguities. Report ambiguity and coverage separately, not as automatic negatives. These criteria concern sampled frames of a known video, not proof of every fleeting subtitle or unseen-source reliability. Assistant references are provisional, not human ground truth. Stop after this one video regardless of favorable/unfavorable outcome; no second video or automatic engine refinement.
 
 Native T3 advisories remain follow-ups only: selector guide freshness, container-versus-video EOF handling, and interrupted initial registration recovery. No correction was offered or applied. T1 numeric-overflow hardening remains separately deferred. T4 and T5 stay unchecked until actual processing, visual adjudication and timing/error handoff are observed.
+
+## T4 registered execution checkpoint
+
+Parent metadata commit `fc880785a9a327700440586f6c550c10a6d44679` was assessed passive (34 authored lines), with no review due. Current metadata boundary advances to that commit; approved source remains `c9b8f92f4a37b44eecfc03f25dedca61303fcd1f`. The run edit surface `.local/v17-full-video-pilot-h01-r1/**` is explicitly authorized. Fresh preflight passed; exact retained registration succeeded once and complete durable plan, empty storage directories and zero-initialization ledger were read back before launch. Frozen plan: 2,608 ordered samples from 0 through 1,303.5 seconds at 0.5-second cadence, duration 1,303.941 seconds, exact historical H01 profile. Foreground execution is next; no OCR has started at this checkpoint. Private prelaunch plan/ledger copies reside under the setup directory. No registration retry, new video, profile change or code patch is authorized.
+
+Foreground T4 execution started at 2026-10-11T19:44:32.115848+00:00; registered frozen identity is unchanged. Initial observed checkpoint: one model initialization and first entered prediction; no reference, profile tuning, second video or code change. T4 remains in progress until all 2,608 durable outputs and separate visual review are verified.
+
+First-five progress checkpoint: six durable records after 117.69 seconds, one model initialization, seven entered predictions and six style/selection calls. Execution remains healthy and foreground; these counts measure processing only, not subtitle reliability.
+
+## T4 power-loss recovery checkpoint
+
+Read-only recovery verified 23 durable records and 24 valid frames; the 24th OCR call was interrupted before its record became durable. No pilot process remains active. Frozen source, models, policy, configuration, runtime and code identities exactly match the registered plan. Private byte-preserving backups of the plan, ledger, progress documents and protected-artifact hashes were written and read back before resuming.
+
+The first attempt has an observed active-time lower bound of 423.75 seconds; the interval after its last checkpoint is unobserved, not proven downtime. Exactly 2,585 missing samples remain. The stored foreground `execute --resume` invocation will reuse the 23 completed records and atomically regenerate only the pending frame as needed. No source, environment, profile, model or Git changes are authorized during this frozen attempt. T4 visual adjudication and T5 remain pending; processing counts are not quality metrics.
+
+Recovery first-new checkpoint: 39 durable records (16 newly completed), two lifetime model initializations and one interrupted call. All 23 prior records and completed frames retain their original hashes; the regenerated pending frame is also byte-identical. Resumed processing remains foreground. The interruption interval is recorded as unobserved, not silently assigned to downtime.
+
+## T4 migration checkpoint: local processing paused
+
+The latest recovery contains 50 durable records and 51 frames; sample index 50 has no durable OCR record. No local pilot remains active. The earlier healthy-foreground checkpoints describe historical observations, not current execution. Preserve the original frozen plan, ledger, frames, records and interruption history; T4 and T5 remain incomplete, with no full-video quality claim.
+
+The user reports overheating and shutdowns and explicitly authorizes moving exactly one video to Prometheus. This supersedes the initial local-only/no-push/no-transfer scope for the migration only: commit all existing code and ODD specs, push without a PR, privately transfer necessary inputs, pull on Prometheus, preserve its three core env values, add missing pilot configuration and continue the one-video evaluation. No dependency installation or engine refinement is authorized.
+
+Use the configured SSH destination `prometheus` and `z kotoba-capture` to find the repository. If needed, use `pwd` transiently; never persist the actual remote absolute path in Git or Engram. The configured SSH attempt currently fails with `Permission denied (publickey)`; no remote changes or inference have been verified. Do not inspect alternative keys or sessions to bypass this blocker.
+
+Remote runtime, package, tool, environment and path identities must be audited before resume. The original frozen local plan may reject a different host; never forge hashes or bypass its guards. If a separately frozen remote plan is necessary, keep all 50 local records and timings as distinct historical evidence, not an uninterrupted remote execution or unseen-source validation.
+
+Migration tasks and acceptance are tracked in [prometheus-video-pilot-migration.md](prometheus-video-pilot-migration.md), mirrored at `odd/prometheus-video-pilot-migration/tasks`. Local processing remains stopped while the parent completes the public-history audit, commit/push and connection handoff. Historical failures, advisories and unchecked evaluation tasks remain unchanged.
