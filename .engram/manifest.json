@@ -24,6 +24,14 @@
       "sessions": 1,
       "memories": 2,
       "prompts": 0
+    },
+    {
+      "id": "866ec70f",
+      "created_by": "uriel",
+      "created_at": "2026-10-12T02:07:00.265620047Z",
+      "sessions": 1,
+      "memories": 206,
+      "prompts": 0
     }
   ]
 }
