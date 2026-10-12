@@ -58,3 +58,35 @@ The installed runtime identity matches the local package/tool identity (PaddleOC
 Two setup-harness checks initially stopped after successful preflight: a system-Python identity inspection lacked optional packages, and a short packet seek ended before EOF because seeking starts at an earlier keyframe. Read-only diagnosis corrected the inspection interpreter and enlarged the metadata-only EOF interval. No application source, model, algorithm or env correction was required; the final packet at 1,303.869 seconds covers the final planned sample at 1,303.5 seconds. All required checks subsequently passed.
 
 No real engine initialization, prediction, frame extraction, plan registration or full-video evaluation occurred. Live constructor/alias compatibility remains untested until authorized execution. Prepared output token: `v17-full-video-pilot-prometheus-h01-r1`; its run directory does not exist. Preserve the prior 10–15.4-hour OCR forecast as an extrapolation, not a Prometheus measurement, and keep setup/transfer time separate. RDD approval for tracked source already closed on Osiris; checkout does not copy or imply native review authority on Prometheus.
+
+## Prometheus registered execution checkpoint
+
+Parent committed the M2–M4 metadata as `60b1494a38388bfdea9987bebbc45e0266074383`, observed passive native assessment (34 authored lines, no review due), pushed it and verified remote fast-forward to the same boundary. Parent repeated the remote 31-test focused suite successfully. No tracked source or configuration changed during this checkpoint.
+
+The fresh Prometheus run was registered exactly once at 2026-10-12T00:34:24.873894+00:00. Registration took 1.40 seconds and readback confirmed all 2,608 timestamps (0 through 1,303.5 seconds), exact prepared identity, empty frames/records, no attempts, and zero initialization/prediction/style/selection counters. Frozen identity SHA-256: `6268438b3b4f9ee1743a52ce37f7bde24c903a54bb5a1e9e81cfacc1b1ae51e2`. Private registration proof: `.local/prometheus-video-pilot-migration/execution/registration-proof.json`.
+
+M5 is now in progress, not complete: foreground execution is authorized next for exactly this one registered H01 run. No engine initialization, prediction, extraction or visual review has happened at registration. Keep the 50 local records and their interrupted timings separate. No source/model/env/package changes, automatic retry, second video or tuning are authorized during this frozen attempt.
+
+## Prometheus first-five foreground checkpoint
+
+Execution launched at 2026-10-12T00:37:03.614138+00:00; the tracked CLI attempt began at 2026-10-12T00:37:04.955941+00:00. At 80.01 seconds since launch, five of 2,608 records were durable, with one model initialization, six entered predictions, five style/selection calls, and one running attempt. Recorded phase time at that checkpoint: initialize 3.51 s, extract 2.85 s, completed OCR 66.50 s, style 0.29 s and selection 0.021 s. This is processing evidence only; zero samples have been visually adjudicated.
+
+The first five imply approximately 9.6 hours of OCR alone or 11.6 hours extrapolated from launch-to-checkpoint throughput; these are small-sample forecasts, not actual completion times or quality measurements. Keep waiting on the same foreground attempt; do not start another execution.
+
+Before this actual launch, an orchestration process guard matched its own decoded command text and stopped without running the CLI. Read-only diagnosis confirmed zero attempts, initializations and predictions; the guard was narrowed to exact CLI argument tokens. No engine retry, source change, model change or frozen configuration modification occurred. Private progress proof and sanitized SSH stream remain under `.local/prometheus-video-pilot-migration/execution/`.
+
+Prometheus processing checkpoint: 250/2,608 durable records at 2,700.13 seconds since launch (45.00 minutes), one initialization, 251 entered predictions and 250 style/selection calls. Same foreground attempt remains running. Recorded extraction 131.34 s, OCR 2,538.81 s, style 14.61 s and selection 0.679 s. No visual adjudication or reliability verdict; local historical evidence remains separate.
+
+## Prometheus CPU pilot stopped by user
+
+The user explicitly requested stopping CPU execution and handing GPU work to a future session. A targeted SIGINT was sent only to the matching foreground pilot CLI at 2026-10-12T02:03:57.398829+00:00. The tracked CLI handled `KeyboardInterrupt`, durably finalized a `partial` attempt and ended at 2026-10-12T02:04:03.008348+00:00. Read-only post-stop audit verified zero surviving pilot CLI processes. No automatic resume, re-registration, second video, GPU implementation or engine tuning occurred.
+
+Preserved remote coverage: **513/2,608 durable records and 514 frames**. Last durable display timestamp is 256.0 seconds; sample index 513 at 256.5 seconds was interrupted in OCR before its record became durable. One model initialization and one attempt were observed, with 514 entered predictions and 513 style/selection calls. `interruptedCalls` remains zero because that reconciliation counter advances only on a later resume; the pending OCR and handled interruption are explicitly retained.
+
+Actual remote wall elapsed time: **5,218.052 seconds (1 hour 26 minutes 58 seconds)**; active attempt time 5,218.052 seconds. Recorded phases: initialize 3.511 s, extract 254.778 s, OCR 4,908.645 s, style 30.395 s and selection 1.176 s; export/final-integrity phases zero because the complete run did not finish. Terminal orchestration independently verified unchanged frozen identities and replayed all 513 durable records' native/style/image/geometry/selection bindings. Handled-stop downtime and unobserved interval are both zero for this attempt. Do not combine this timing with the separate interrupted Osiris history.
+
+Private storage at stop: 818,175,427 frame bytes and 9,491,366 record bytes, excluding engine logs and metadata. No final review exports were produced. **Zero samples visually adjudicated; reference coverage zero; accuracy and full-video reliability remain unmeasured.** T4, T5 and M5 remain incomplete.
+
+Recovery locators on Prometheus: `.local/v17-full-video-pilot-prometheus-h01-r1/` preserves the CPU plan, ledger, summary, frames and records; `.local/prometheus-video-pilot-migration/execution/` contains `user-stop-proof.json`, `execution-terminal-proof.json`, `stopped-audit-proof.json` and private logs. The local sanitized stream is `.local/prometheus-video-pilot-migration/execution/ssh-progress.jsonl`. Remote Git remains clean at `60b1494a38388bfdea9987bebbc45e0266074383`; source, env, model and policy bytes were not altered.
+
+Next session: decide and implement GPU execution as a separately scoped change with applicable tests/review and a newly frozen runtime identity. Preserve this CPU attempt rather than claiming it is interchangeable with a different engine/runtime. Parent handles checkpoint/memory export, commit/push and future import; this worker does not start GPU work.
