@@ -1,6 +1,6 @@
 # Run one frozen, reviewable whole-video pilot
 
-The opt-in pilot samples a complete local video with existing CPU OCR, applies the tracked v17 selector and saves every result for review. Completion means sample processing finished, **not** that subtitle accuracy was established. The original Tesseract CLI is unchanged.
+The opt-in pilot samples a complete local video with an existing local CPU or explicit GPU OCR runtime, applies the tracked v17 selector and saves every result for review. Completion means sample processing finished, **not** that subtitle accuracy was established. The original Tesseract CLI is unchanged.
 
 ## Configure first
 
@@ -14,6 +14,7 @@ Copy `.env.example` to the ignored project `.env` and replace its portable place
 | `KOTOBA_PILOT_REC_MODEL_DIR` | Existing local PP-OCRv6_medium_rec directory inside experiment storage. |
 | `KOTOBA_PILOT_POLICY_FILE` | Private JSON inside experiment storage: `{"policies": {"manual": <policy>}}`. |
 | `KOTOBA_PILOT_PROFILE_ID` | Explicit manual policy key; optionally overridden by `--profile-id`. |
+| `KOTOBA_PILOT_DEVICE` | `cpu` (default) or explicit `gpu:0`; selects the matching local PaddlePaddle distribution. GPU selection refuses unavailable CUDA/device support and never falls back to CPU. |
 | `KOTOBA_PILOT_CPU_THREADS` | Integer 1–64; defaults to 10. |
 | `KOTOBA_PILOT_INTERVAL` | Finite seconds, 0.001–3600; defaults to 0.5, optionally overridden by `--interval`. |
 | `KOTOBA_OBSIDIAN_VAULT_ROOT` | Unused; no vault is needed or written. |
@@ -40,7 +41,7 @@ The plan samples `[0, duration)` at the configured cadence, with a 100,000-sampl
 
 ## Freeze and durability
 
-The plan binds source bytes/stat/mode, every model file, manual policy bytes and selected profile, relevant resolved configuration, tracked Python module bytes, Python interpreter/version, installed package versions/code and FFmpeg tool binaries/versions. Identity is checked before every launch/resume and again after processing. Model/code hashes are not recomputed before every individual prediction. Inputs must not be modified during execution. Changed inputs refuse reuse instead of silently recalibrating.
+The plan binds source bytes/stat/mode, every model file, manual policy bytes and selected profile, relevant resolved configuration (including device), tracked Python module bytes, Python interpreter/version, selected PaddlePaddle distribution, installed package versions/code and FFmpeg tool binaries/versions. Identity is checked before every launch/resume and again after processing. Model/code hashes are not recomputed before every individual prediction. Inputs must not be modified during execution. Changed inputs, device, or backend refuse reuse instead of silently recalibrating. Plans frozen by earlier runner versions are historical evidence, not identity-compatible migration targets; register a fresh output name.
 
 A local advisory lock prevents concurrent writers through this CLI. Every stage entry is durably checkpointed before extraction, prediction, style measurement and selection. Each complete record is atomically written, fsynced and directory-fsynced **before** the completed count advances. Resume validates exact ordered record coverage, record/image hashes, geometry/style bindings and a pure selector replay. A record durable just before a ledger interruption is reconciled without another prediction. An entered but nondurable call remains an interrupted attempt, not a completed result.
 
@@ -57,7 +58,7 @@ A local advisory lock prevents concurrent writers through this CLI. Every stage 
 
 ## Offline runtime boundary
 
-Existing PaddleOCR 3.7.0 uses CPU PP-OCRv6_medium_det/rec, with MKLDNN, CINN, TensorRT, orientation classifiers and unwarping disabled. The public `use_tensorrt=False` / `precision=fp32` aliases must map to `use_pptrt=False` / `pptrt_precision=fp32` in the installed runtime. The runner checks this contract but never patches installed packages. The frozen package-code hashes capture any existing local modifications.
+Existing PaddleOCR 3.7.0 uses PP-OCRv6_medium_det/rec with the selected `cpu` or `gpu:0` device, FP32, and MKLDNN, CINN, TensorRT, orientation classifiers, and unwarping disabled. `cpu` requires the `paddlepaddle` distribution; `gpu:0` requires `paddlepaddle-gpu`, CUDA compilation, and one visible GPU. The runner rejects a mismatched backend and never falls back to CPU. The public `use_tensorrt=False` / `precision=fp32` aliases must map to `use_pptrt=False` / `pptrt_precision=fp32` in the installed runtime. The runner checks this contract but never patches installed packages. The frozen package-code hashes capture any existing local modifications.
 
 Model directories must contain `inference.json`, `inference.yml` and `inference.pdiparams`; missing models/dependencies refuse execution, not trigger installation. Caches stay inside the private run. Model-source checks are disabled before optional imports; a process-local Python audit hook rejects socket connections, DNS resolution and bind operations. This hook is not a system-wide firewall or a guarantee covering arbitrary native code outside Python's audit surface. No installer, remote invocation or download command exists in the runner.
 

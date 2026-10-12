@@ -83,6 +83,7 @@ class PilotConfig:
     policy: dict
     interval: float
     threads: int
+    device: str
 
     def runtime_values(self):
         """Relevant resolved values are private and become a frozen hash."""
@@ -149,5 +150,8 @@ def load_config(project_root, video_alias, output_name, *, env_file=None,
     cadence = numeric(interval if interval is not None else values.get('KOTOBA_PILOT_INTERVAL', '.5'),
                       'Sampling interval', .001, 3600)
     threads = numeric(values.get('KOTOBA_PILOT_CPU_THREADS', '10'), 'CPU threads', 1, 64, integer=True)
+    device = values.get('KOTOBA_PILOT_DEVICE', 'cpu')
+    if device not in ('cpu', 'gpu:0'):
+        raise ConfigError('Pilot device must be cpu or gpu:0')
     return PilotConfig(root, media, experiment, relative_file(media, video_alias), video_alias,
-                       output, detector, recognizer, policy_file, profile, policy, cadence, threads)
+                       output, detector, recognizer, policy_file, profile, policy, cadence, threads, device)

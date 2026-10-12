@@ -20,7 +20,7 @@ class FakeRuntime:
         self.texts = ['First\nSecond', '', 'First\nSecond']
 
     def probe(self, config): return 100, 100, self.duration
-    def identity(self): return {'runtime': 'synthetic immutable runtime', 'ffmpeg': 'mock', 'ffprobe': 'mock'}
+    def identity(self, config=None): return {'runtime': 'synthetic immutable runtime', 'ffmpeg': 'mock', 'ffprobe': 'mock'}
     def initialize(self, config): self.initializations += 1; return self
     def extract(self, config, timestamp, path):
         path.write_bytes(b'\x89PNG\r\n\x1a\n' + b'\0\0\0\rIHDR' + struct.pack('>II', 100, 100) + b'synthetic')
@@ -100,6 +100,14 @@ class VideoPilotTests(unittest.TestCase):
         self.assertTrue((self.config.output / 'plan.json').exists())
         self.assertEqual(self.execute(resume=True)['completed'], 3)
 
+    def test_gpu_register_remains_ml_import_free_and_device_freezes(self):
+        object.__setattr__(self.config, 'device', 'gpu:0')
+        self.execute(mode='register')
+        self.assertEqual(self.runtime.initializations, 0)
+        object.__setattr__(self.config, 'device', 'cpu')
+        with self.assertRaises(PilotError): self.execute(resume=True)
+        self.assertEqual(self.runtime.initializations, 0)
+
     def test_freeze_rejects_source_model_policy_runtime_and_config_mutation(self):
         for kind in ('video', 'model', 'policy', 'runtime', 'code', 'config'):
             with self.subTest(kind=kind):
@@ -108,7 +116,7 @@ class VideoPilotTests(unittest.TestCase):
                 if kind == 'video': self.config.video.write_bytes(b'changed')
                 elif kind == 'model': (self.config.detector / 'inference.json').write_bytes(b'changed')
                 elif kind == 'policy': self.config.policy_file.write_text('{}')
-                elif kind == 'runtime': self.runtime.identity = lambda: {'runtime': 'changed'}
+                elif kind == 'runtime': self.runtime.identity = lambda config: {'runtime': 'changed'}
                 elif kind == 'config': object.__setattr__(self.config, 'interval', .25)
                 else:
                     with patch('kotoba_capture.video_pilot.code_identity', return_value={'changed': 'identity'}):
@@ -262,6 +270,54 @@ raise SystemExit(p.main(sys.argv[3:]))
         self.assertFalse(calls[0]['use_doc_unwarping'])
         self.assertFalse(calls[0]['use_textline_orientation'])
         self.assertEqual(calls[0]['text_detection_model_dir'], str(self.config.detector))
+
+    def test_gpu_constructor_contract_checks_selected_device(self):
+        from types import SimpleNamespace
+        from kotoba_capture.video_pilot import LocalRuntime
+        calls = []
+        def constructor(**kwargs): calls.append(kwargs); return 'synthetic engine'
+        paddle = SimpleNamespace(is_compiled_with_cuda=lambda: True,
+                                 device=SimpleNamespace(cuda=SimpleNamespace(device_count=lambda: 1)))
+        modules = {'paddle': paddle, 'paddleocr': SimpleNamespace(PaddleOCR=constructor),
+                   'paddleocr._common_args': SimpleNamespace(parse_common_args=lambda *a, **k: {'use_pptrt': False, 'pptrt_precision': 'fp32'})}
+        object.__setattr__(self.config, 'device', 'gpu:0')
+        with patch.dict(sys.modules, modules), patch('kotoba_capture.video_pilot.offline'):
+            runtime = object.__new__(LocalRuntime)
+            self.assertEqual(runtime.initialize(self.config), 'synthetic engine')
+        self.assertEqual(calls[0]['device'], 'gpu:0')
+        self.assertFalse(calls[0]['enable_mkldnn'])
+        self.assertFalse(calls[0]['enable_cinn'])
+        self.assertFalse(calls[0]['use_tensorrt'])
+        self.assertEqual(calls[0]['precision'], 'fp32')
+
+    def test_gpu_initialization_refuses_unavailable_cuda_without_cpu_fallback(self):
+        from types import SimpleNamespace
+        from kotoba_capture.video_pilot import LocalRuntime
+        paddle = SimpleNamespace(is_compiled_with_cuda=lambda: False,
+                                 device=SimpleNamespace(cuda=SimpleNamespace(device_count=lambda: 0)))
+        object.__setattr__(self.config, 'device', 'gpu:0')
+        with patch.dict(sys.modules, {'paddle': paddle}), patch('kotoba_capture.video_pilot.offline'):
+            with self.assertRaises(PilotError): object.__new__(LocalRuntime).initialize(self.config)
+
+    def test_runtime_identity_requires_selected_paddle_distribution(self):
+        from types import SimpleNamespace
+        from kotoba_capture.video_pilot import LocalRuntime
+        runtime = object.__new__(LocalRuntime)
+        runtime.tools = {}
+        selected = {'paddleocr': '3.7.0', 'paddlex': '3.7.2', 'paddlepaddle-gpu': '3.3.1',
+                    'numpy': '2.3.5', 'opencv-contrib-python': '4.10.0.84'}
+        def distribution(name):
+            if name not in selected:
+                raise __import__('importlib').metadata.PackageNotFoundError(name)
+            return SimpleNamespace(version=selected[name], files=(), locate_file=lambda path: path)
+        object.__setattr__(self.config, 'device', 'gpu:0')
+        with patch('kotoba_capture.video_pilot.importlib.metadata.distribution', side_effect=distribution):
+            identity = runtime.identity(self.config)
+        self.assertIn('paddlepaddle-gpu', identity['packages'])
+        selected.pop('paddlepaddle-gpu')
+        selected['paddlepaddle'] = '3.3.1'
+        with patch('kotoba_capture.video_pilot.importlib.metadata.distribution', side_effect=distribution):
+            with self.assertRaises(PilotError): runtime.identity(self.config)
 
     def test_local_ffmpeg_boundary_commands_are_argument_lists(self):
         from types import SimpleNamespace

@@ -22,7 +22,7 @@ from .pilot_config import ConfigError, load_config, relative_file
 from .selector import _valid_style_evidence, select_caption_profile_v17
 
 SCHEMA = 'kotoba-video-pilot/v1'
-PACKAGES = ('paddleocr', 'paddlex', 'paddlepaddle', 'numpy', 'opencv-python', 'opencv-contrib-python')
+PACKAGES = ('paddleocr', 'paddlex', 'paddlepaddle', 'paddlepaddle-gpu', 'numpy', 'opencv-python', 'opencv-contrib-python')
 PHASES = ('initialize', 'extract', 'ocr', 'style', 'selection', 'export', 'integrity')
 
 
@@ -197,7 +197,7 @@ class LocalRuntime:
         stream = data['streams'][0]
         return stream['width'], stream['height'], float(data['format']['duration'])
 
-    def identity(self):
+    def identity(self, config):
         packages = {}
         for name in PACKAGES:
             try:
@@ -210,11 +210,16 @@ class LocalRuntime:
                 if path.is_file() and path.suffix in ('.py', '.so', '.json', '.yml', '.yaml'):
                     h.update(str(relative).encode()); h.update(bytes.fromhex(sha256(path)))
             packages[name] = dict(version=distribution.version, codeSha256=h.hexdigest())
-        if packages.get('paddleocr', {}).get('version') != '3.7.0' or not all(k in packages for k in ('paddlex', 'paddlepaddle', 'numpy')):
-            raise PilotError('Existing PaddleOCR 3.7.0 CPU runtime is required; installation/download is disabled')
+        paddle_distribution = 'paddlepaddle-gpu' if config.device == 'gpu:0' else 'paddlepaddle'
+        other_paddle_distribution = 'paddlepaddle' if config.device == 'gpu:0' else 'paddlepaddle-gpu'
+        if (packages.get('paddleocr', {}).get('version') != '3.7.0' or
+                not all(k in packages for k in ('paddlex', paddle_distribution, 'numpy')) or
+                other_paddle_distribution in packages):
+            raise PilotError('Existing PaddleOCR 3.7.0 runtime does not match the selected device; installation/download is disabled')
         if not any(k in packages for k in ('opencv-python', 'opencv-contrib-python')):
             raise PilotError('Existing OpenCV runtime is required; installation is disabled')
         return dict(python=sys.version, executableSha256=sha256(Path(sys.executable).resolve()),
+                    device=config.device, paddleDistribution=paddle_distribution,
                     packages=packages, tools={name: dict(sha256=sha256(Path(path).resolve()),
                     version=self.command([path, '-version']).decode(errors='replace').splitlines()[0])
                     for name, path in self.tools.items()})
@@ -222,9 +227,13 @@ class LocalRuntime:
     def initialize(self, config):
         offline(config)
         try:
+            if config.device == 'gpu:0':
+                import paddle
+                if not paddle.is_compiled_with_cuda() or paddle.device.cuda.device_count() < 1:
+                    raise PilotError('Selected GPU device is unavailable; CPU fallback is disabled')
             from paddleocr import PaddleOCR
             from paddleocr._common_args import parse_common_args
-            kwargs = dict(device='cpu', text_detection_model_name='PP-OCRv6_medium_det',
+            kwargs = dict(device=config.device, text_detection_model_name='PP-OCRv6_medium_det',
                           text_detection_model_dir=str(config.detector), text_recognition_model_name='PP-OCRv6_medium_rec',
                           text_recognition_model_dir=str(config.recognizer), use_doc_orientation_classify=False,
                           use_doc_unwarping=False, use_textline_orientation=False, enable_mkldnn=False,
@@ -275,7 +284,7 @@ def make_identity(config, runtime):
                 source=file_identity(config.video), policyFile=file_identity(config.policy_file),
                 profileId=config.profile_id, policy=copy.deepcopy(config.policy), interval=config.interval,
                 models={'detector': tree_identity(config.detector), 'recognizer': tree_identity(config.recognizer)},
-                runtime=runtime.identity(), frameGeometry=dict(sourceWidth=width, sourceHeight=height, crop=[0, 0, width, height]),
+                runtime=runtime.identity(config), frameGeometry=dict(sourceWidth=width, sourceHeight=height, crop=[0, 0, width, height]),
                 duration=duration, timestamps=timestamps)
 
 

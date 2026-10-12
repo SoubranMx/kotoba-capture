@@ -27,14 +27,23 @@ class ConfigTests(unittest.TestCase):
                         KOTOBA_PILOT_POLICY_FILE='.local/policy.json', KOTOBA_PILOT_PROFILE_ID='manual')
 
     def config(self, **kwargs):
-        return load_config(self.root, 'sample.mp4', 'trial', environment=self.env, **kwargs)
+        environment = kwargs.pop('environment', self.env)
+        return load_config(self.root, 'sample.mp4', 'trial', environment=environment, **kwargs)
 
     def test_portable_relative_paths_and_optional_vault(self):
         c = self.config()
         self.assertEqual(c.video, self.root / 'media/sample.mp4')
         self.assertEqual(c.interval, .5)
         self.assertEqual(c.threads, 10)
+        self.assertEqual(c.device, 'cpu')
         self.assertEqual(c.policy, POLICY)
+
+    def test_device_accepts_only_cpu_or_explicit_first_gpu(self):
+        self.assertEqual(self.config().device, 'cpu')
+        self.assertEqual(self.config(environment={**self.env, 'KOTOBA_PILOT_DEVICE': 'gpu:0'}).device, 'gpu:0')
+        for value in ('gpu', 'gpu:1', 'cuda:0', 'CPU', ' cpu', ''):
+            with self.subTest(value=value), self.assertRaises(ConfigError):
+                self.config(environment={**self.env, 'KOTOBA_PILOT_DEVICE': value})
 
     def test_env_loader_and_environment_precedence(self):
         (self.root / '.env').write_text('KOTOBA_PILOT_CPU_THREADS="2" # comment\nKOTOBA_PILOT_INTERVAL=0.25\n')
