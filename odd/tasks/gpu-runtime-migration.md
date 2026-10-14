@@ -57,3 +57,32 @@ The user subsequently authorized explicit GPU support in the runner with tests a
 Acceptance: explicit device/backend synthetic tests pass; GPU package identity can be inspected without ML imports; changing device/backend invalidates resume; actual GPU OCR initialization and prediction are observed on the bounded sample; aggregate timing and output differences are honestly reported. Any failed, unavailable, or pending proof remains recorded.
 
 Forecast: approximately 150–250 authored additions/deletions, excluding ignored benchmark artifacts. Delivery strategy: `ask-on-risk`; no PR or commits currently authorized. The parent owns the full Engram mirror before source writes and after each task. RDD is on, but candidate review consent is separate and not inherited.
+
+## Committed runner and authorized full-video GPU test
+
+The user explicitly authorized a commit followed by starting the same single H01 video test. Commit `b56f1b627db192a94d98366f17cbd5534dd3e259` contains the eight reviewed code/test/config/document files, with 154 additions and 14 deletions. Its tree exactly matches the reviewed immutable candidate `d3dd33be3801bebe776065474a7d7d28ccbaaa03`; native review completed without findings and its exact acknowledgement burned authority. The subsequent committed-only assessment was medium, `review_due=false`, reason `under_budget`; it does not replace the completed workspace review. No push or PR was requested or performed.
+
+- [x] **G5 — Start one fresh frozen H01 GPU video test.** Route: delegated; private configuration/asset inspection and foreground execution belong to one bounded worker. Confirm the existing H01 source content, model and policy identities against historical private evidence, preserve CPU partials and all three core environment settings, use the isolated GPU interpreter and process-only `KOTOBA_PILOT_DEVICE=gpu:0`, and require a fresh output name and frozen runtime identity. Run ML-import-free preflight before registration, give one timing/resource forecast before launch, register once, execute once in the foreground, and retain recoverable private outputs. Do not resume historical CPU plans, download models, tune the engine, process another video, or use SSH. Record actual progress, phase timings, interruptions, and terminal status honestly; processing completion alone is not an accuracy or visual-review verdict.
+
+Private GPU execution evidence belongs under `.local/gpu-full-video-pilot/` and the fresh run output under `.local/v17-full-video-pilot-gpu-h01-r1/`. Missing or mismatched assets block launch rather than permitting substitutions. Full-run reliability acceptance still requires the existing separate visual/reference checks; do not claim those from processing or from the five-image benchmark. The parent mirrors this extension before registration and records observed execution evidence afterward. GPU test and metadata are authorized locally; no push, PR, second video, installations, or source changes are authorized by this extension.
+
+## Historical G5 execution checkpoints
+
+The fresh GPU plan registered once with 2,608 samples at a 0.5-second cadence for the existing H01 input. Its frozen source, model, and policy identities matched the preserved CPU evidence; the selected runtime is `gpu:0` with the GPU Paddle distribution. Readback before launch confirmed zero attempts, records, frames, initializations, and predictions.
+
+A first execute invocation was refused before creating an attempt because its reconstructed arguments omitted the runner's explicit `--resume` requirement for an already registered output. It made no OCR/runtime changes. After parent verification, the exact stored execute declaration—with `--resume` bound only to this fresh GPU plan—launched one foreground attempt. This is an argument correction before any OCR attempt, not a CPU resume or an OCR retry.
+
+First-five checkpoint: five durable records, one model initialization, and no reliability or visual-review verdict. The first five completed-record phases totaled 1.983 seconds extraction, 1.257 seconds OCR, 0.233 seconds style measurement, and 0.016 seconds selection; these are early processing observations only.
+
+Historical checkpoint: 611/2,608 durable records, one active foreground attempt, one model initialization, and 611 entered predictions/style measurements/selections. Accumulated phases: initialization 2.064 seconds, extraction 302.178 seconds, OCR 97.031 seconds, style 29.564 seconds, and selection 1.033 seconds. At that checkpoint the process was in progress and G5 was incomplete; the terminal result below supersedes that execution status. Processing does not establish visual accuracy or full-video reliability.
+
+Private aggregate proof locators: `.local/gpu-full-video-pilot/preflight/phase-b-registration-summary.json`, `first-five-checkpoint.json`, and `progress-0611.json`. Detailed run data remains only under the ignored fresh output directory.
+
+
+## G5 terminal processing checkpoint
+
+The single corrected foreground GPU attempt reached **2,608/2,608 durable records and frames** and completed with one model initialization, 2,608 entered predictions, 2,608 style measurements, 2,608 selections, and zero interrupted calls. The corrected invocation used the already registered fresh GPU identity; it did not register again or resume either CPU partial. Final recorded phase times: initialization 2.064 seconds, extraction 1,312.773 seconds, OCR 408.222 seconds, style 125.328 seconds, selection 3.600 seconds, export 0.031 seconds, and integrity 3.308 seconds; total attempt elapsed time was 1,964.346 seconds.
+
+Final readback confirms the frozen identity still matches current source/runtime inputs and the historical source, model, and policy identities; the selected device remains `gpu:0` with the GPU Paddle distribution. No pilot process remains. The core environment and preserved CPU evidence were only read; neither was changed by this worker. Detailed execution artifacts remain ignored under `.local/`.
+
+This is a processing-completion checkpoint only. All extracted text remains for human review; no visual adjudication, accuracy verdict, or full-video reliability acceptance was performed. Private aggregate terminal proof: `.local/gpu-full-video-pilot/preflight/terminal-summary.json`.
