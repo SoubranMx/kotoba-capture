@@ -1,0 +1,49 @@
+name: General request
+description: Propose a feature, improvement, maintenance task, or other scoped work.
+title: "type(scope): concise summary"
+labels: []
+body:
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Pre-flight checks
+      options:
+        - label: I searched existing open and closed issues for duplicates.
+          required: true
+        - label: This request is scoped to one clear outcome.
+          required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem description
+      description: What problem should this work solve, and for whom?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Describe the expected outcome and acceptance criteria.
+    validations:
+      required: true
+  - type: textarea
+    id: affected-area
+    attributes:
+      label: Affected area
+      description: List relevant apps, packages, routes, APIs, or workflows.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe alternatives, including why they were not selected.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add links, screenshots, references, or implementation notes.
+    validations:
+      required: false
