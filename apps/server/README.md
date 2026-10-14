@@ -54,3 +54,11 @@ uv run --directory apps/server --offline --no-python-downloads --python /usr/bin
 The evaluator reads only the Japanese Transcription and Timestamp columns; untimed vocabulary rows are counted and skipped. Its sample protocol and aggregate-only results are in [the prototype evaluation guide](../../docs/prototype-evaluation.md).
 
 The evaluator applies Unicode NFKC and removes whitespace while preserving punctuation. It chooses the most frequent normalized OCR string, including blanks, inside each half-open timestamp window; the earliest sample wins ties. Character error is summed Levenshtein edits divided by reference characters and may exceed 100%. The 10% CER threshold is provisional. Detailed per-window reports contain private reference/OCR text and must remain under ignored `.local/`; the CLI prints aggregate metrics only. This reference-assisted modal-snapshot diagnostic is not detection recall, and confidence is not used as a correctness probability.
+
+## Opt-in experimental selector
+
+`kotoba_capture.selector` preserves the frozen v17 geometry/style selector and 116 public synthetic tests. It consumes native OCR arrays with a manual profile; it does not run OCR or process video and is not wired into the default CLI. See [the experimental selector guide](../../docs/experimental-selector.md) for its runnable synthetic example, dependency-free checks and known limitations. The optional visual adapter is available as `kotoba_capture.style_evidence`; it requires existing NumPy/OpenCV dependencies. The opt-in full-video workflow is separate from the original Tesseract CLI.
+
+## Opt-in frozen whole-video pilot
+
+`python -m kotoba_capture.video_pilot` loads the ignored project `.env` (or `--env-file`) with process-environment precedence. It samples one complete local video, applies the versioned v17 selector and optional adapter, and writes resumable private audits and review exports. It requires existing local PaddleOCR 3.7.0 dependencies and model assets; `KOTOBA_PILOT_DEVICE` selects `cpu` (default) or explicit `gpu:0` with the matching PaddlePaddle distribution. It never installs, downloads, or falls back from GPU to CPU. The original CLI does not auto-load `.env` and remains unchanged. See [the pilot guide](../../docs/full-video-pilot.md) for configuration, freeze/resume semantics and interpretation limits.

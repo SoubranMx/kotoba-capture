@@ -65,4 +65,70 @@ The modal-window results are poor and do not meet the provisional 10% CER diagno
 
 A reference intervention can span changing subtitle screens, while this diagnostic selects one modal snapshot. Its CER can overstate error or miss text that appeared briefly; it is not subtitle detection recall or end-to-end segmentation precision. Coarse timestamps are not independently verified display boundaries. Signage, furigana contamination, reading order, timing, and export usefulness were not visually reviewed, and one sample does not establish behavior across background variants. Confidence scores remain uncalibrated engine heuristics.
 
-Next bounded step: manually review local representative crops for the 28 timestamp windows, focusing on high-error/blank cases and timing boundaries, then decide whether a separately approved region/configuration experiment is justified. Do not infer OCR reliability or add preprocessing from these aggregate metrics alone.
+## Controlled upper-half ROI experiment
+
+The user confirmed subtitle placement in the upper half and approved a parameter-only comparison. The only configuration change was ROI `0,0,1920,540`, preserving source resolution. The video interval, 0.5-second sampling, Tesseract OEM 1 / PSM 6, Japanese model, tool versions, reference, and scoring protocol remained unchanged. No source code was changed.
+
+| Diagnostic | Full frame | Upper half |
+|---|---:|---:|
+| Crop dimensions | 1920×1080 | 1920×540 |
+| Observations / crops | 428 / 428 | 428 / 428 |
+| Grouped segments | 425 | 414 |
+| Reference windows / normalized characters | 28 / 457 | 28 / 457 |
+| Character edits | 1,736 | 788 |
+| Corpus CER | 379.87% | 172.43% |
+| Exact modal-window matches | 0 / 28 | 3 / 28 |
+| Windows at or below provisional 10% CER | 0 / 28 | 4 / 28 |
+| Blank modal windows / windows without samples | 2 / 0 | 1 / 0 |
+| Samples unassigned to reference windows | 54 | 54 |
+| Pipeline runtime | 337.49 s | 225.61 s |
+
+Independent read-only verification reproduced both saved summaries and confirmed that ROI was the sole parameter change. All 428 upper-half PNG headers report 1920×540, crop links resolve, and the existing 26 tests pass. Original video/note size and modification times were unchanged; the model hash matched. Evaluation runtime was not separately measured for this experiment.
+
+The upper-half crop improved the corpus diagnostic by 207.44 percentage points, but the output remains poor and does not establish reliable transcription. This comparison does not identify the remaining text as signage, prove that every subtitle was retained, or measure detection recall, precise timing, furigana separation, or reading order. No visual review was performed by the agent.
+
+Private run outputs are under `.local/runs/upper-half-roi/`; detailed comparison and aggregate summaries are under `.local/evaluations/upper-half-roi/`. To reproduce, use the existing commands above with new output directories and add `--roi 0,0,1920,540` to the pipeline command.
+
+## Controlled tighter-band experiment
+
+The user explicitly authorized visual inspection of exactly three existing upper-half crops at approximately 6, 80, and 143 seconds. In those images, subtitle boxes start around y=80; single-line boxes end near y=220, while the three-line announcement reaches about y=460 and almost the full frame width. Furigana appears above the main characters. These observations are specific to those three samples, not a guarantee across the video or other subtitle styles.
+
+The approved next run changed only ROI to `0,60,1920,420`, retaining the full-width band from y=60 to y=480 with margins. The same sample, model, tools, interval, PSM/OEM, reference, and diagnostic protocol were retained. No additional images were uploaded or rendered, and no extraction code was changed.
+
+| Diagnostic | Full frame | Upper half | Tighter band |
+|---|---:|---:|---:|
+| Character edits / reference characters | 1,736 / 457 | 788 / 457 | 771 / 457 |
+| Corpus CER | 379.87% | 172.43% | 168.71% |
+| Exact modal-window matches | 0 / 28 | 3 / 28 | 0 / 28 |
+| Windows at or below provisional 10% CER | 0 / 28 | 4 / 28 | 0 / 28 |
+| Blank modal windows / windows without samples | 2 / 0 | 1 / 0 | 4 / 0 |
+| Grouped segments / observations | 425 / 428 | 414 / 428 | 412 / 428 |
+| Pipeline runtime | 337.49 s | 225.61 s | 195.15 s |
+
+All runs used the same 28 approximate reference windows and had 54 samples unassigned to those windows. Tighter-band per-window CER min/median/max was 63.16% / 124.55% / 533.33%. Its 428 crops use 218,958,238 bytes. Evaluation runtime was not separately measured.
+
+Independent verification reproduced all three saved summaries, confirmed ROI as the sole configuration difference, checked all 428 band PNG headers at 1920×420 and all 412 segment crop links, and passed the existing 26 tests. Original input size/mtime and model hash checks passed in the run; previous artifacts remain intact.
+
+This is not an unambiguous improvement: corpus CER fell by only 3.72 percentage points versus the upper-half run, while all three exact matches and four threshold-qualified windows disappeared and blank modal windows increased. Do not adopt this tighter band as a demonstrated improvement. The comparison does not identify whether the changes came from clipping, furigana, background content, page segmentation, or modal selection; no such cause or full subtitle retention was independently verified.
+
+Private artifacts are under `.local/runs/subtitle-band-roi/` and `.local/evaluations/subtitle-band-roi/`. Reproduction uses the commands above with new output destinations and `--roi 0,60,1920,420`.
+
+## Isolated spatial association v3 regression
+
+A completed bounded correction now requires rectangle intersection and at least 0.35 selected connected-component closed-mask support during caption association. This replaces trusting broad rectangle overlap or unconditional near-Y proximity; it adds no threshold sweep and preserves the existing configuration values.
+
+| Known-data regression diagnostic | Result |
+|---|---:|
+| Cases / positive references | 23 / 21 |
+| Complete-output edits / characters | 0 / 477 |
+| Positive outputs exact | 21 / 21 |
+| Known negatives empty | 2 / 2 |
+| Synthetic tests | 20 passed |
+
+This is a saved 23-case REGRESSION only: two known cases improved, nineteen were unchanged, and frozen v2 remains intact. No OCR ran for v3, and it does not adopt a production, server, or default behavior.
+
+References were assistant-transcribed and remain marked `userVerified=false`; limited human observations do not verify the full corpus. These results are not fresh validation or a general zero-error guarantee. The known negatives cover only prior designated cases; human review limitations and unsupported sparse, style, interval, or non-blue layouts remain.
+
+Any Git checkpoint covers this documentation only; ignored experimental runtime/source remains uncommitted and is not experiment code in the checkpoint.
+
+Next bounded step: the known geometry correction is complete. A separately authorized fresh negative/style/interval validation and human review are still required before claiming broader usefulness. Do not launch new OCR or make further configuration, model, preprocessing, production, server, or default changes automatically.
